@@ -1,10 +1,10 @@
 'use strict';
 
 var expect = require('expect.js');
-var ots = require('../lib/client');
-var client = require('./common');
 
-describe('ots', function () {
+var ots = require('../lib/client');
+
+describe('client', function () {
   it('should ok', function* () {
     var client = ots.createClient({
       accessKeyID: 'QpavStUJkTjCGixr',
@@ -41,16 +41,28 @@ describe('ots', function () {
     expect(false).to.be.ok();
   });
 
-  it('should ok with tables', function* () {
-    var response = yield* client.listTable();
-    expect(response.table_names).to.be.ok();
-    expect(response.table_names.length).to.be.above(0);
+  it('createInteger should ok', function () {
+    var value = ots.createInteger(1);
+    expect(value).to.eql({ type: 2, v_int: 1 });
   });
 
-  it('describeTable should ok', function* () {
-    var response = yield* client.describeTable('metrics');
-    expect(response).to.be.ok();
-    expect(response.table_meta.table_name).to.be('metrics');
-    expect(response.reserved_throughput_details).to.be.ok();
+  it('createString should ok', function () {
+    var value = ots.createString('hi');
+    expect(value).to.eql({ type: 3, v_string: 'hi' });
+  });
+
+  it('createBoolean should ok', function () {
+    var value = ots.createBoolean(true);
+    expect(value).to.eql({ type: 4, v_bool: true });
+  });
+
+  it('createDouble should ok', function () {
+    var value = ots.createDouble(1.2);
+    expect(value).to.eql({ type: 5, v_double: 1.2 });
+  });
+
+  it('createBinary should ok', function () {
+    var value = ots.createBinary(1);
+    expect(value).to.eql({ type: 6, v_binary: 1 });
   });
 });

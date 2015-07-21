@@ -1,7 +1,7 @@
 {
   "name": "ots2",
   "version": "1.0.0",
-  "description": "",
+  "description": "OTS(2014-08-08) client for Node.js(ES6)",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Jackson Tian",
   "license": "MIT",
   "dependencies": {
     "debug": "^2.2.0",
@@ -22,5 +22,16 @@
     "expect.js": "^0.3.1",
     "co-mocha": "^1.1.2",
     "mocha": "^2.2.5"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ali-sdk/ots2.git"
+  },
+  "keywords": [
+    "OTS"
+  ],
+  "bugs": {
+    "url": "https://github.com/ali-sdk/ots2/issues"
+  },
+  "homepage": "https://github.com/ali-sdk/ots2#readme"
 }
