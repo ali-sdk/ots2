@@ -3,7 +3,6 @@
 var expect = require('expect.js');
 var client = require('./common');
 var OTS = require('../lib/client');
-var ots2 = require('../lib/ots2');
 
 var sleep = function (ms) {
   return new Promise(function (fulfill, reject) {
@@ -35,7 +34,7 @@ describe('batch', function () {
         put_rows: [
           {
             condition: {
-              row_existence: ots2.RowExistenceExpectation.IGNORE
+              row_existence: OTS.RowExistenceExpectation.IGNORE
             },
             primary_key: [
               {
@@ -92,8 +91,39 @@ describe('batch', function () {
     expect(table.rows.length).to.be.above(0);
     var row = table.rows[0];
     expect(row.is_ok).to.be(true);
-    expect(row.parsedRow).to.be({ test: 'test_value' });
+    expect(row.parsedRow).to.eql({ test: 'test_value' });
     expect(row.consumed.capacity_unit.read).to.be(1);
     expect(row.consumed.capacity_unit.write).to.be(0);
+  });
+
+  it('getRange should ok', function* () {
+    var start = [
+      {
+        name: 'uid',
+        value: OTS.createInfMin()
+      }
+    ];
+    var end = [
+      {
+        name: 'uid',
+        value: OTS.createInfMax()
+      }
+    ];
+
+    var request = {
+      table_name: 'metrics',
+      direction: OTS.Direction.FORWARD,
+      columns_to_get: ['test'],
+      limit: 4,
+      inclusive_start_primary_key: start,
+      exclusive_end_primary_key: end
+    };
+    var response = yield* client.getRange(request);
+    expect(response).to.be.ok();
+    expect(response.consumed.capacity_unit.read).to.be(1);
+    expect(response.consumed.capacity_unit.write).to.be(0);
+    expect(response.rows.length).to.be.above(0);
+    var row = response.rows[0];
+    expect(row.parsedRow).to.eql({ test: 'test_value' });
   });
 });

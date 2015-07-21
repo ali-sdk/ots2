@@ -3,7 +3,6 @@
 var expect = require('expect.js');
 var client = require('./common');
 var OTS = require('../lib/client');
-var ots2 = require('../lib/ots2');
 
 var sleep = function (ms) {
   return new Promise(function (fulfill, reject) {
@@ -31,7 +30,7 @@ describe('row', function () {
   it('putRow should ok', function* () {
     var name = 'metrics';
     var condition = {
-      row_existence: ots2.RowExistenceExpectation.IGNORE
+      row_existence: OTS.RowExistenceExpectation.IGNORE
     };
     var primaryKeys = [
       {
@@ -70,7 +69,7 @@ describe('row', function () {
   it('updateRow should ok', function* () {
     var name = 'metrics';
     var condition = {
-      row_existence: ots2.RowExistenceExpectation.IGNORE
+      row_existence: OTS.RowExistenceExpectation.IGNORE
     };
     var primaryKeys = [
       {
@@ -81,7 +80,7 @@ describe('row', function () {
     var columns = [
       {
         name: 'test',
-        type: ots2.OperationType.PUT,
+        type: OTS.OperationType.PUT,
         value: OTS.createString('test_value_replaced')
       }
     ];
@@ -108,7 +107,7 @@ describe('row', function () {
   it('deleteRow should ok', function* () {
     var name = 'metrics';
     var condition = {
-      row_existence: ots2.RowExistenceExpectation.IGNORE
+      row_existence: OTS.RowExistenceExpectation.IGNORE
     };
     var primaryKeys = [
       {
