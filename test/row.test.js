@@ -2,6 +2,7 @@
 
 var expect = require('expect.js');
 var client = require('./common');
+var OTS = require('../lib/client');
 var ots2 = require('../lib/ots2');
 
 var sleep = function (ms) {
@@ -16,7 +17,7 @@ describe('row', function () {
   before(function* () {
     this.timeout(12000);
     var keys = [{ 'name': 'uid', 'type': 'STRING' }];
-    var capacityUnit = {read: 1, write: 1};
+    var capacityUnit = {read: 5, write: 5};
     var response = yield* client.createTable('metrics', keys, capacityUnit);
     expect(response).to.be.ok();
     yield sleep(5000);
@@ -35,19 +36,13 @@ describe('row', function () {
     var primaryKeys = [
       {
         name: 'uid',
-        value: {
-          type: ots2.ColumnType.STRING,
-          v_string: "test_uid"
-        }
+        value: OTS.createString('test_uid')
       }
     ];
     var columns = [
       {
         name: 'test',
-        value: {
-          type: ots2.ColumnType.STRING,
-          v_string: "test_value"
-        }
+        value: OTS.createString('test_value')
       }
     ];
     var response = yield* client.putRow(name, condition, primaryKeys, columns);
@@ -61,16 +56,81 @@ describe('row', function () {
     var primaryKeys = [
       {
         name: 'uid',
-        value: {
-          type: ots2.ColumnType.STRING,
-          v_string: "test_uid"
-        }
+        value: OTS.createString('test_uid')
       }
     ];
     var columns = ['test'];
     var response = yield* client.getRow(name, primaryKeys, columns);
     expect(response).to.be.ok();
     expect(response.parsedRow).to.be.eql({'test': 'test_value'});
+    expect(response.consumed.capacity_unit.read).to.be(1);
+    expect(response.consumed.capacity_unit.write).to.be(0);
+  });
+
+  it('updateRow should ok', function* () {
+    var name = 'metrics';
+    var condition = {
+      row_existence: ots2.RowExistenceExpectation.IGNORE
+    };
+    var primaryKeys = [
+      {
+        name: 'uid',
+        value: OTS.createString('test_uid')
+      }
+    ];
+    var columns = [
+      {
+        name: 'test',
+        type: ots2.OperationType.PUT,
+        value: OTS.createString('test_value_replaced')
+      }
+    ];
+    var response = yield* client.updateRow(name, condition, primaryKeys, columns);
+    expect(response).to.be.ok();
+    expect(response.consumed.capacity_unit.read).to.be(0);
+    expect(response.consumed.capacity_unit.write).to.be(1);
+
+    var name = 'metrics';
+    var primaryKeys = [
+      {
+        name: 'uid',
+        value: OTS.createString('test_uid')
+      }
+    ];
+    var columns = ['test'];
+    var response = yield* client.getRow(name, primaryKeys, columns);
+    expect(response).to.be.ok();
+    expect(response.parsedRow).to.be.eql({'test': 'test_value_replaced'});
+    expect(response.consumed.capacity_unit.read).to.be(1);
+    expect(response.consumed.capacity_unit.write).to.be(0);
+  });
+
+  it('deleteRow should ok', function* () {
+    var name = 'metrics';
+    var condition = {
+      row_existence: ots2.RowExistenceExpectation.IGNORE
+    };
+    var primaryKeys = [
+      {
+        name: 'uid',
+        value: OTS.createString('test_uid')
+      }
+    ];
+    var response = yield* client.deleteRow(name, condition, primaryKeys);
+    expect(response).to.be.ok();
+    expect(response.consumed.capacity_unit.read).to.be(0);
+    expect(response.consumed.capacity_unit.write).to.be(1);
+    var name = 'metrics';
+    var primaryKeys = [
+      {
+        name: 'uid',
+        value: OTS.createString('test_uid')
+      }
+    ];
+    var columns = ['test'];
+    var response = yield* client.getRow(name, primaryKeys, columns);
+    expect(response).to.be.ok();
+    expect(response.parsedRow).to.be.eql(null);
     expect(response.consumed.capacity_unit.read).to.be(1);
     expect(response.consumed.capacity_unit.write).to.be(0);
   });
