@@ -1,0 +1,6 @@
+.logs
+node_modules
+coverage
+hydrogen-*.cfg
+node-*.log
+node.log
