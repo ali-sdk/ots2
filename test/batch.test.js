@@ -37,16 +37,10 @@ describe('batch', function () {
               row_existence: OTS.RowExistenceExpectation.IGNORE
             },
             primary_key: [
-              {
-                name: 'uid',
-                value: OTS.createString('test_uid')
-              }
+              OTS.createStringColumn('uid', 'test_uid')
             ],
             attribute_columns: [
-              {
-                name: 'test',
-                value: OTS.createString('test_value')
-              }
+              OTS.createStringColumn('test', 'test_value')
             ]
           }
         ],
@@ -73,10 +67,7 @@ describe('batch', function () {
         rows: [
           {
             primary_key: [
-              {
-                name: 'uid',
-                value: OTS.createString('test_uid')
-              }
+              OTS.createStringColumn('uid', 'test_uid')
             ]
           }
         ],
@@ -98,16 +89,10 @@ describe('batch', function () {
 
   it('getRange should ok', function* () {
     var start = [
-      {
-        name: 'uid',
-        value: OTS.createInfMin()
-      }
+      OTS.createInfMinColumn('uid')
     ];
     var end = [
-      {
-        name: 'uid',
-        value: OTS.createInfMax()
-      }
+      OTS.createInfMaxColumn('uid')
     ];
 
     var request = {

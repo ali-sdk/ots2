@@ -54,26 +54,17 @@ var condition = {
   row_existence: ots.RowExistenceExpectation.IGNORE
 };
 var primaryKeys = [
-  {
-    name: 'uid',
-    value: ots.createString('test_uid')
-  }
+  ots.createStringColumn('uid', 'test_uid')
 ];
 var columns = [
-  {
-    name: 'test',
-    value: ots.createString('test_value')
-  }
+  ots.createStringColumn('test', 'test_value')
 ];
 var response = yield* client.putRow(name, condition, primaryKeys, columns);
 
 // 读取行
 var name = 'metrics';
 var primaryKeys = [
-  {
-    name: 'uid',
-    value: ots.createString('test_uid')
-  }
+  ots.createStringColumn('uid', 'test_uid')
 ];
 var columns = ['test'];
 var response = yield* client.getRow(name, primaryKeys, columns);
@@ -84,10 +75,7 @@ var condition = {
   row_existence: ots.RowExistenceExpectation.IGNORE
 };
 var primaryKeys = [
-  {
-    name: 'uid',
-    value: ots.createString('test_uid')
-  }
+  ots.createStringColumn('uid', 'test_uid')
 ];
 var columns = [
   {
@@ -101,13 +89,10 @@ var response = yield* client.updateRow(name, condition, primaryKeys, columns);
 // 删除行
 var name = 'metrics';
 var condition = {
-  row_existence: OTS.RowExistenceExpectation.IGNORE
+  row_existence: ots.RowExistenceExpectation.IGNORE
 };
 var primaryKeys = [
-  {
-    name: 'uid',
-    value: OTS.createString('test_uid')
-  }
+  ots.createStringColumn('uid', 'test_uid')
 ];
 var response = yield* client.deleteRow(name, condition, primaryKeys);
 ```
@@ -122,19 +107,13 @@ var tables = [
     put_rows: [
       {
         condition: {
-          row_existence: OTS.RowExistenceExpectation.IGNORE
+          row_existence: ots.RowExistenceExpectation.IGNORE
         },
         primary_key: [
-          {
-            name: 'uid',
-            value: OTS.createString('test_uid')
-          }
+          ots.createStringColumn('uid', 'test_uid')
         ],
         attribute_columns: [
-          {
-            name: 'test',
-            value: OTS.createString('test_value')
-          }
+          ots.createStringColumn('test', 'test_value')
         ]
       }
     ],
@@ -151,10 +130,7 @@ var tables = [
     rows: [
       {
         primary_key: [
-          {
-            name: 'uid',
-            value: OTS.createString('test_uid')
-          }
+          ots.createStringColumn('uid', 'test_uid')
         ]
       }
     ],
@@ -165,21 +141,15 @@ var response = yield* client.batchGetRow(tables);
 
 // 范围读
 var start = [
-  {
-    name: 'uid',
-    value: OTS.createInfMin()
-  }
+  ots.createInfMinColumn('uid')
 ];
 var end = [
-  {
-    name: 'uid',
-    value: OTS.createInfMax()
-  }
+  ots.createInfMaxColumn('uid')
 ];
 
 var request = {
   table_name: 'metrics',
-  direction: OTS.Direction.FORWARD,
+  direction: ots.Direction.FORWARD,
   columns_to_get: ['test'],
   limit: 4,
   inclusive_start_primary_key: start,
