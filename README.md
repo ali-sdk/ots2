@@ -28,6 +28,8 @@ var client = ots.createClient({
 
 ### 调用API
 
+详细API文档请参见：<http://doxmate.cool/ali-sdk/ots2/index.html>
+
 所有表的操作
 ```js
 // 列出所有表名
