@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "make test"
   },
   "author": "Jackson Tian",
   "license": "MIT",
@@ -28,7 +28,7 @@
     "url": "git+https://github.com/ali-sdk/ots2.git"
   },
   "keywords": [
-    "OTS"
+    "OTS", "OTS2", "Aliyun"
   ],
   "bugs": {
     "url": "https://github.com/ali-sdk/ots2/issues"
