@@ -13,9 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "debug": "^2.2.0",
-    "httpx": "^1.0.0",
-    "protobufjs": "~4.0.0",
-    "streamx": "^1.0.0"
+    "httpx": "^2.0.0",
+    "protobufjs": "~4.0.0"
   },
   "devDependencies": {
     "istanbul": "^0.3.17",
@@ -28,10 +27,16 @@
     "url": "git+https://github.com/ali-sdk/ots2.git"
   },
   "keywords": [
-    "OTS", "OTS2", "Aliyun"
+    "OTS",
+    "OTS2",
+    "Aliyun"
   ],
   "bugs": {
     "url": "https://github.com/ali-sdk/ots2/issues"
   },
-  "homepage": "https://github.com/ali-sdk/ots2#readme"
+  "homepage": "https://github.com/ali-sdk/ots2#readme",
+  "files": [
+    "lib",
+    "spec"
+  ]
 }

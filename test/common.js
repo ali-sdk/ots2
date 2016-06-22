@@ -11,6 +11,8 @@ var options = {
 
 try { // 覆盖
   options = require('./config');
-} catch (ex) {}
+} catch (ex) {
+
+}
 
 module.exports = ots.createClient(options);
