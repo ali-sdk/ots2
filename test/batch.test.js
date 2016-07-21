@@ -1,29 +1,23 @@
 'use strict';
 
-var expect = require('expect.js');
-var client = require('./common');
-var OTS = require('../lib/client');
+const expect = require('expect.js');
+const kitx = require('kitx');
 
-var sleep = function (ms) {
-  return new Promise(function (fulfill, reject) {
-    setTimeout(function () {
-      fulfill();
-    }, ms);
-  });
-};
+const client = require('./common');
+const OTS = require('../lib/client');
 
 describe('batch', function () {
   before(function* () {
     this.timeout(12000);
     var keys = [{ 'name': 'uid', 'type': 'STRING' }];
     var capacityUnit = {read: 5, write: 5};
-    var response = yield* client.createTable('metrics', keys, capacityUnit);
+    var response = yield client.createTable('metrics', keys, capacityUnit);
     expect(response).to.be.ok();
-    yield sleep(5000);
+    yield kitx.sleep(5000);
   });
 
   after(function* () {
-    var response = yield* client.deleteTable('metrics');
+    var response = yield client.deleteTable('metrics');
     expect(response).to.be.ok();
   });
 
@@ -48,7 +42,7 @@ describe('batch', function () {
         delete_rows: []
       }
     ];
-    var response = yield* client.batchWriteRow(tables);
+    var response = yield client.batchWriteRow(tables);
     expect(response).to.be.ok();
     expect(response.tables.length).to.be.above(0);
     var table = response.tables[0];
@@ -66,15 +60,13 @@ describe('batch', function () {
         table_name: 'metrics',
         rows: [
           {
-            primary_key: [
-              OTS.createStringColumn('uid', 'test_uid')
-            ]
+            primary_key: {uid: 'test_uid'}
           }
         ],
         columns_to_get: ['test']
       }
     ];
-    var response = yield* client.batchGetRow(tables);
+    var response = yield client.batchGetRow(tables);
     expect(response).to.be.ok();
     expect(response.tables.length).to.be.above(0);
     var table = response.tables[0];
@@ -88,12 +80,12 @@ describe('batch', function () {
   });
 
   it('getRange should ok', function* () {
-    var start = [
-      OTS.createInfMinColumn('uid')
-    ];
-    var end = [
-      OTS.createInfMaxColumn('uid')
-    ];
+    var start = {
+      uid: OTS.InfMin
+    };
+    var end = {
+      uid: OTS.InfMax
+    };
 
     var request = {
       table_name: 'metrics',
@@ -103,7 +95,7 @@ describe('batch', function () {
       inclusive_start_primary_key: start,
       exclusive_end_primary_key: end
     };
-    var response = yield* client.getRange(request);
+    var response = yield client.getRange(request);
     expect(response).to.be.ok();
     expect(response.consumed.capacity_unit.read).to.be(1);
     expect(response.consumed.capacity_unit.write).to.be(0);

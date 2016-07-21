@@ -49,7 +49,7 @@ describe('row', function () {
     expect(response.parsedRow).to.be.eql({
       'test': 'test_value',
       boolean: true,
-      integer: 1,
+      integer: {low: 1, high: 0, unsigned: false},
       double: 1.1,
       binary: new Buffer([0x01])
     });

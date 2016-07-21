@@ -17,7 +17,7 @@ describe('client', function () {
       yield client.listTable();
     } catch (e) {
       expect(e.name).to.be('OTSAuthFailedError');
-      expect(e.message).to.be('Signature mismatch.');
+      expect(e.message).to.be('The AccessKeyID does not exist.');
       return;
     }
     expect(false).to.be.ok();
