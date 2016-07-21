@@ -17,7 +17,7 @@ describe('client', function () {
       yield* client.listTable();
     } catch (e) {
       expect(e.name).to.be('OTSAuthFailedError');
-      expect(e.message).to.be('The AccessKeyID is disabled.');
+      expect(e.message).to.be('Signature mismatch.');
       return;
     }
     expect(false).to.be.ok();
