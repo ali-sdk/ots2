@@ -29,7 +29,8 @@
     "no-undef": 2,
     "callback-return": [2, ["callback", "cb", "next"]],
     "global-require": 0,
-    "no-console": 0
+    "no-console": 0,
+    "generator-star-spacing": ["error", "after"]
   },
   "env": {
     "es6": true,
