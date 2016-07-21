@@ -3,11 +3,14 @@ REPORTER = spec
 TIMEOUT = 3000
 MOCHA_OPTS =
 
+lint:
+	@eslint --fix lib test
+
 clean:
 	@rm -rf node_modules
 
 install:
-	@PYTHON=`which python2.6` npm install --production
+	@npm install --production
 
 test:
 	@NODE_ENV=test ./node_modules/.bin/mocha \
