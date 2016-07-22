@@ -1,6 +1,6 @@
 {
   "name": "ots2",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "OTS(2014-08-08) client for Node.js(ES6)",
   "main": "./lib/client.js",
   "directories": {
