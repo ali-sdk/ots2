@@ -23,7 +23,7 @@ var client = ots.createClient({
   accessKeySecret: '<YOUR ACCESSKEYSECRET>',
   instance: '<YOUR INSTANCE>',
   region: '<YOUR REGION>',
-  keepAlive: 0, // default 0, or keepAlive 3000 ms
+  keepAliveMsecs: 1000, // default 1000
 });
 ```
 
