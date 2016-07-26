@@ -38,8 +38,7 @@ describe('batch', function () {
             ]
           }
         ],
-        update_rows: [],
-        delete_rows: []
+        update_rows: []
       }
     ];
     var response = yield client.batchWriteRow(tables);
