@@ -10,20 +10,21 @@ OTS是构建在阿里云飞天分布式系统之上的NoSQL数据库服务，提
 ## 安装
 
 ```sh
-$ npm install ots2 --save
+$ npm install @alicloud/ots2 --save
 ```
 
 ## 使用
 
 ### 创建客户端
 ```js
-var ots = require('ots2');
+const ots = require('@alicloud/ots2');
 var client = ots.createClient({
   accessKeyID: '<YOUR ACCESSKEYID>',
   accessKeySecret: '<YOUR ACCESSKEYSECRET>',
   instance: '<YOUR INSTANCE>',
   region: '<YOUR REGION>',
   keepAliveMsecs: 1000, // default 1000
+  timeout: 3000 // default 3000ms
 });
 ```
 
