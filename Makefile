@@ -14,7 +14,6 @@ install:
 
 test:
 	@NODE_ENV=test ./node_modules/.bin/mocha \
-		--harmony \
 		--reporter $(REPORTER) \
 		--require co-mocha \
 		--timeout $(TIMEOUT) \
@@ -22,7 +21,7 @@ test:
 		$(TESTS)
 
 test-cov:
-	@NODE_ENV=test node --harmony \
+	@NODE_ENV=test node \
 		node_modules/.bin/istanbul cover --report html \
 		./node_modules/.bin/_mocha -- \
 		--reporter $(REPORTER) \
@@ -33,7 +32,7 @@ test-cov:
 
 debug:
 	@NODE_ENV=test \
-		node-debug --nodejs --harmony \
+		node-debug \
 		./node_modules/.bin/_mocha \
 		--reporter $(REPORTER) \
 		--require co-mocha \
