@@ -2,7 +2,7 @@
 
 var expect = require('expect.js');
 
-var ots = require('../lib/client');
+var ots = require('../');
 
 describe('client', function () {
   it('should ok', function* () {
