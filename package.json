@@ -2,7 +2,7 @@
   "name": "@alicloud/ots2",
   "version": "1.4.0",
   "description": "OTS(2014-08-08) client for Node.js(ES6)",
-  "main": "./lib/client.js",
+  "main": "./index",
   "directories": {
     "test": "test"
   },

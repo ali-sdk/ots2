@@ -4,7 +4,7 @@ const expect = require('expect.js');
 const kitx = require('kitx');
 
 const client = require('./common');
-const OTS = require('../lib/client');
+const OTS = require('../');
 
 describe('batch', function () {
   before(function* () {
@@ -89,7 +89,7 @@ describe('batch', function () {
         ],
         columns_to_get: ['test'],
         filter: OTS.makeFilter('test != @test false', {
-          test: OTS.createString('test_value')
+          test: OTS.createValue('test_value')
         })
       }
     ];
@@ -147,7 +147,7 @@ describe('batch', function () {
       inclusive_start_primary_key: start,
       exclusive_end_primary_key: end,
       filter: OTS.makeFilter('test != @test false', {
-        test: OTS.createString('test_value')
+        test: 'test_value'
       })
     };
     var response = yield client.getRange(request);

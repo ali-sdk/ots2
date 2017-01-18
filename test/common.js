@@ -1,6 +1,6 @@
 'use strict';
 
-var ots = require('../lib/client');
+var ots = require('../');
 
 var options = {
   accessKeyID: '<YOUR ACCESSKEYID>',

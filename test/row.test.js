@@ -4,7 +4,7 @@ const expect = require('expect.js');
 const kitx = require('kitx');
 
 const client = require('./common');
-const OTS = require('../lib/client');
+const OTS = require('../');
 
 describe('row', function () {
   before(function* () {
@@ -61,7 +61,7 @@ describe('row', function () {
     var name = 'metrics';
     var primaryKeys = {uid: 'test_uid'};
     var columns = ['test', 'integer', 'double', 'boolean', 'binary'];
-    var filter = OTS.makeFilter('uid == @uid false', {uid: OTS.createString('test_uid')});
+    var filter = OTS.makeFilter('uid == @uid false', {uid: 'test_uid'});
     var response = yield client.getRow(name, primaryKeys, columns, filter);
     expect(response).to.be.ok();
     expect(response.parsedRow).to.be.eql(null);
