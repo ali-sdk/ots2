@@ -2,17 +2,14 @@
 
 // E = E OR E
 // E = E AND E
-// E = name == value ifMiss
-// E = name != value ifMiss
-// E = name > value ifMiss
-// E = name >= value ifMiss
-// E = name < value ifMiss
-// E = name <= value ifMiss
+// E = NOT E
+// E = e
+// e = name operator value ifMiss
 
-// value = true | false
-// value = [A-Za_z]*
-// value = \d*
-// value = \d+.\d+
+// name = [A-Za-z_] + [A-Za-z_\d]*
+// operator = == | != | > | >= | < | <=
+// value = @ + [A-Za-z_] + [A-Za-z_\d]*
+// ifMiss = true | false
 
 'use strict';
 
