@@ -57,6 +57,18 @@ describe('row', function () {
     expect(response.consumed.capacity_unit.write).to.be(0);
   });
 
+  it('getRow with filter should ok', function* () {
+    var name = 'metrics';
+    var primaryKeys = {uid: 'test_uid'};
+    var columns = ['test', 'integer', 'double', 'boolean', 'binary'];
+    var filter = OTS.makeFilter('uid == @uid false', {uid: OTS.createString('test_uid')});
+    var response = yield client.getRow(name, primaryKeys, columns, filter);
+    expect(response).to.be.ok();
+    expect(response.parsedRow).to.be.eql(null);
+    expect(response.consumed.capacity_unit.read).to.be(1);
+    expect(response.consumed.capacity_unit.write).to.be(0);
+  });
+
   it('updateRow with put should ok', function* () {
     const name = 'metrics';
     var condition = {

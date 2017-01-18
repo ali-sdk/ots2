@@ -1,9 +1,10 @@
-package com.aliyun.cloudservice.ots2;
+package com.aliyun.openservices.ots.protocol;
 
 message Error {
     required string code = 1;
     optional string message = 2;
 }
+
 
 enum ColumnType {
     INF_MIN = 0; // only for GetRange
@@ -50,8 +51,46 @@ enum RowExistenceExpectation {
     EXPECT_NOT_EXIST = 2;
 }
 
+enum ColumnConditionType {
+    CCT_RELATION                 = 1;
+    CCT_COMPOSITE                = 2;
+}
+
+enum ComparatorType {
+    CT_EQUAL                    = 1;
+    CT_NOT_EQUAL                = 2;
+    CT_GREATER_THAN             = 3;
+    CT_GREATER_EQUAL            = 4;
+    CT_LESS_THAN                = 5;
+    CT_LESS_EQUAL               = 6;
+}
+
+message RelationCondition {
+    required ComparatorType comparator     = 1;
+    required string column_name            = 2;
+    required ColumnValue column_value      = 3;
+    required bool pass_if_missing          = 4;
+}
+
+enum LogicalOperator {
+    LO_NOT                      = 1;
+    LO_AND                      = 2;
+    LO_OR                       = 3;
+}
+
+message CompositeCondition {
+    required LogicalOperator combinator     = 1;
+    repeated ColumnCondition sub_conditions = 2;
+}
+
+message ColumnCondition {
+    required ColumnConditionType type    = 1;
+    required bytes condition = 2;  // Serialized bytes of column condition of the type
+}
+
 message Condition {
     required RowExistenceExpectation row_existence = 1;
+    optional ColumnCondition column_condition      = 2;
 }
 
 message CapacityUnit {
@@ -125,6 +164,7 @@ message GetRowRequest {
     required string table_name = 1;
     repeated Column primary_key = 2;
     repeated string columns_to_get = 3;
+    optional ColumnCondition filter = 4;
 }
 
 message GetRowResponse {
@@ -187,6 +227,7 @@ message TableInBatchGetRowRequest {
     required string table_name = 1;
     repeated RowInBatchGetRowRequest rows = 2;
     repeated string columns_to_get = 3;
+    optional ColumnCondition filter = 4;
 }
 
 message BatchGetRowRequest {
@@ -268,6 +309,7 @@ message GetRangeRequest {
     optional int32 limit = 4;
     repeated Column inclusive_start_primary_key = 5; // required all PKs, possibly filled with INF_MIN/INF_MAX
     repeated Column exclusive_end_primary_key = 6; // required all PKs, possibly filled with INF_MIN/INF_MAX
+    optional ColumnCondition filter = 7;
 }
 
 message GetRangeResponse {
