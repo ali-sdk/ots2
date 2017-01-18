@@ -173,9 +173,10 @@ ots.makeFilter('column_name < @name true', {
 // true => 列不存在时，默认结果
 ```
 
-其中组合条件的语法如下：
+其中组合条件的语法（DSL）如下：
 
 ```js
+name == @name true
 NOT name == @name true
 NOT NOT name == @name true
 name > @name true AND age <= @age false
