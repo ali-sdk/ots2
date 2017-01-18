@@ -1,21 +1,37 @@
-ColumnCondition
-  = CompositeCondition
-  / RelationCondition
-
-CompositeCondition
-  = left:RelationCondition _ combinar:Combinator _ right:RelationCondition {
+// E = E OR E
+OrCompositeCondition
+  = left:AndCompositeCondition _ "OR" _ right:OrCompositeCondition {
     return {
       type: 'COMPOSITE',
-      combinar: combinar,
+      combinar: "OR",
       conditions: [left, right]
     };
   }
+  / AndCompositeCondition
 
-Combinator
-  = "AND"
-  / "OR"
-  / "NOT"
+// E = E AND E
+AndCompositeCondition
+  = left:NotCompositeCondition _ "AND" _ right:AndCompositeCondition {
+    return {
+      type: 'COMPOSITE',
+      combinar: "AND",
+      conditions: [left, right]
+    };
+  }
+  / NotCompositeCondition
 
+// E = NOT E
+NotCompositeCondition
+  = "NOT" _ condition:NotCompositeCondition {
+    return {
+      type: 'COMPOSITE',
+      combinar: "NOT",
+      conditions: [condition]
+    };
+  }
+  / RelationCondition // E = NOT e
+
+// E = e
 RelationCondition
   = column_name:ColumnName _ comparator:Comparetor _ column_value:Value _ passIfMissing:ifMissing {
     return {

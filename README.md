@@ -157,6 +157,36 @@ var request = {
 var response = yield client.getRange(request);
 ```
 
+### 条件更新（Conditional Update）和过滤器（Filter）支持
+
+条件更新和过滤器是一个 ConditionColumn 类型，是一种类似 SQL 中的 where 条件。
+
+本模块提供一个makeFilter方法来快速生成一个 ConditionColumn 对象。
+
+```js
+ots.makeFilter('column_name < @name true', {
+  name: 'Jackson Tian'
+});
+// column_name => 表中的列名
+// < => 操作符：==, !=, <, <=, >, >=
+// @name 上下文中的属性名
+// true => 列不存在时，默认结果
+```
+
+其中组合条件的语法如下：
+
+```js
+NOT name == @name true
+NOT NOT name == @name true
+name > @name true AND age <= @age false
+name > @name true OR age <= @age false
+NOT name > @name true AND age <= @age false
+name > @name true AND age <= @age false AND gender == @gender true
+name > @name true OR age <= @age false AND gender == @gender true
+```
+
+优先级顺序为：NOT > AND > OR
+
 ## License
 OTS服务由阿里云提供。但本模块在MIT许可下自由使用。
 

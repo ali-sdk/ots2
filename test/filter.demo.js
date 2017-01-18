@@ -16,16 +16,25 @@
 
 'use strict';
 
-var parse = require('../lib/filter').parse;
+var parse = require('../lib/filter_parser').parse;
 
-var OTS = require('../');
+var tree = parse('name == @name true');
+console.log(JSON.stringify(tree, null, 2));
 
-var locals = {
-  name: OTS.createString('JacksonTian'),
-  age: OTS.createInteger(18)
-};
-var condition = OTS.parse('name == @name true', locals);
-console.log(JSON.stringify(condition, null, 2));
+var tree = parse('NOT name == @name true');
+console.log(JSON.stringify(tree, null, 2));
 
-var condition = OTS.parse('name > @name true AND age <= @age false', locals);
-console.log(JSON.stringify(condition, null, 2));
+var tree = parse('NOT NOT name == @name true');
+console.log(JSON.stringify(tree, null, 2));
+
+var tree = parse('name > @name true AND age <= @age false');
+console.log(JSON.stringify(tree, null, 2));
+
+var tree = parse('NOT name > @name true AND age <= @age false');
+console.log(JSON.stringify(tree, null, 2));
+
+var tree = parse('name > @name true AND age <= @age false AND gender == @gender true');
+console.log(JSON.stringify(tree, null, 2));
+
+var tree = parse('name > @name true OR age <= @age false AND gender == @gender true');
+console.log(JSON.stringify(tree, null, 2));
