@@ -25,7 +25,7 @@ describe('table', function () {
     }
   });
 
-  it('should ok with tables', function* () {
+  it('listTable should ok', function* () {
     var response = yield* client.listTable();
     expect(response.table_names).to.be.ok();
     expect(response.table_names.length).to.be.above(0);
