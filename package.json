@@ -39,6 +39,7 @@
   "homepage": "https://github.com/ali-sdk/ots2#readme",
   "files": [
     "lib",
-    "spec"
+    "spec",
+    "index.js"
   ]
 }
