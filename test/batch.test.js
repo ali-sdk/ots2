@@ -53,6 +53,34 @@ describe('batch', function () {
     expect(row.consumed.capacity_unit.write).to.be(1);
   });
 
+  it('batchWriteRow delete_rows should ok', function* () {
+    var tables = [
+      {
+        table_name: 'metrics',
+        delete_rows: [
+          {
+            condition: {
+              row_existence: OTS.RowExistenceExpectation.IGNORE
+            },
+            primary_key: {
+              uid: 'test-uid'
+            }
+          }
+        ]
+      }
+    ];
+    var response = yield client.batchWriteRow(tables);
+    expect(response).to.be.ok();
+    expect(response.tables.length).to.be.above(0);
+    var table = response.tables[0];
+    expect(table.table_name).to.be('metrics');
+    expect(table.delete_rows.length).to.be.above(0);
+    var row = table.delete_rows[0];
+    expect(row.is_ok).to.be(true);
+    expect(row.consumed.capacity_unit.read).to.be(0);
+    expect(row.consumed.capacity_unit.write).to.be(1);
+  });
+
   it('batchGetRow should ok', function* () {
     var tables = [
       {
