@@ -1,42 +1,42 @@
 // E = E OR E
-OrCompositeCondition
-  = left:AndCompositeCondition _ "OR" _ right:OrCompositeCondition {
+OrCompositeColumnValueFilter
+  = left:AndCompositeColumnValueFilter _ "OR" _ right:OrCompositeColumnValueFilter {
     return {
-      type: 'COMPOSITE',
+      type: 'CompositeColumnValueFilter',
       combinar: "OR",
       conditions: [left, right]
     };
   }
-  / AndCompositeCondition
+  / AndCompositeColumnValueFilter
 
 // E = E AND E
-AndCompositeCondition
-  = left:NotCompositeCondition _ "AND" _ right:AndCompositeCondition {
+AndCompositeColumnValueFilter
+  = left:NotCompositeColumnValueFilter _ "AND" _ right:AndCompositeColumnValueFilter {
     return {
-      type: 'COMPOSITE',
+      type: 'CompositeColumnValueFilter',
       combinar: "AND",
       conditions: [left, right]
     };
   }
-  / NotCompositeCondition
+  / NotCompositeColumnValueFilter
 
 // E = NOT E
-NotCompositeCondition
-  = "NOT" _ condition:NotCompositeCondition {
+NotCompositeColumnValueFilter
+  = "NOT" _ condition:NotCompositeColumnValueFilter {
     return {
-      type: 'COMPOSITE',
+      type: 'CompositeColumnValueFilter',
       combinar: "NOT",
       conditions: [condition]
     };
   }
-  / RelationCondition // E = NOT e
+  / SingleColumnValueFilter // E = NOT e
 
 // E = e
-RelationCondition
-  = column_name:ColumnName _ comparator:Comparetor _ column_value:Value _ passIfMissing:ifMissing {
+SingleColumnValueFilter
+  = column_name:ColumnName _ comparator:Comparetor _ column_value:Value _ passIfMissing:ifMissing _ latestVersionOnly:latestVersionOnly {
     return {
-      type: 'RELATION',
-      condition: [column_name, comparator, column_value, passIfMissing]
+      type: 'SingleColumnValueFilter',
+      condition: [column_name, comparator, column_value, passIfMissing, latestVersionOnly]
     };
   }
 
@@ -58,13 +58,19 @@ Value
     return value_name;
   }
 
-ifMissing
+BOOL
   = "true" {
     return true;
   }
   / "false" {
     return false;
   }
+
+ifMissing
+  = BOOL
+
+latestVersionOnly
+  = BOOL
 
 NameStart
   = [a-zA-Z_]
