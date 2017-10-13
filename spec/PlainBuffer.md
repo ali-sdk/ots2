@@ -109,7 +109,7 @@ void GetChecksum(uint8_t* crc, const InplaceRow& row)
 [column4:del_all_versions]
 编码：
 
-````
+```
     <Header开始>[0x75]
     <主键列开始>[0x1]
         <Cell1>[0x3][0x4][3][pk1][0x5][3][5][iampk]
