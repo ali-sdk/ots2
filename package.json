@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "make test"
+    "test": "mocha -R spec test/*.test.js",
+    "test-file": "mocha -R spec",
+    "test-cov": "nyc --reporter=html --reporter=text mocha -R spec test/*.test.js"
   },
   "author": "Jackson Tian",
   "license": "MIT",
@@ -19,10 +21,9 @@
     "pegjs": "^0.10.0"
   },
   "devDependencies": {
-    "co-mocha": "^1.1.2",
     "expect.js": "^0.3.1",
-    "istanbul": "^0.3.17",
-    "mocha": "^2.2.5"
+    "mocha": "^4.0.1",
+    "nyc": "^11.2.1"
   },
   "repository": {
     "type": "git",

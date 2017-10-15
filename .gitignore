@@ -5,3 +5,4 @@ hydrogen-*.cfg
 node-*.log
 node.log
 config.js
+.nyc_output/*
