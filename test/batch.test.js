@@ -6,94 +6,102 @@ const kitx = require('kitx');
 const client = require('./common');
 const OTS = require('../');
 
+const { serialize } = require('../lib/plainbuffer');
+
 describe('batch', function () {
-  before(function* () {
+  before(async function () {
     this.timeout(12000);
     var keys = [{ 'name': 'uid', 'type': 'STRING' }];
-    var capacityUnit = {read: 5, write: 5};
-    var response = yield client.createTable('metrics', keys, capacityUnit);
+    var capacityUnit = {read: 1, write: 1};
+    var options = {
+      table_options: {
+        time_to_live: -1,// 数据的过期时间, 单位秒, -1代表永不过期. 假如设置过期时间为一年, 即为 365 * 24 * 3600.
+        max_versions: 1
+      }
+    };
+    var response = await client.createTable('metrics', keys, capacityUnit, options);
     expect(response).to.be.ok();
-    yield kitx.sleep(5000);
+    await kitx.sleep(5000);
   });
 
-  after(function* () {
-    var response = yield client.deleteTable('metrics');
+  after(async function () {
+    var response = await client.deleteTable('metrics');
     expect(response).to.be.ok();
   });
 
-  it('batchWriteRow should ok', function* () {
+  it('batchWriteRow should ok', async function () {
     var tables = [
       {
         table_name: 'metrics',
-        put_rows: [
+        rows: [
           {
+            type: OTS.OperationType.PUT,
             condition: {
               row_existence: OTS.RowExistenceExpectation.IGNORE
             },
-            primary_key: [
-              OTS.createStringColumn('uid', 'test_uid')
-            ],
-            attribute_columns: [
-              OTS.createStringColumn('test', 'test_value')
-            ]
+            row_change: serialize({
+              uid: 'test_uid'
+            }, {
+              test: 'test_value'
+            }),
+            return_content: null
           }
-        ],
-        update_rows: []
+        ]
       }
     ];
-    var response = yield client.batchWriteRow(tables);
+    var response = await client.batchWriteRow(tables);
     expect(response).to.be.ok();
     expect(response.tables.length).to.be.above(0);
     var table = response.tables[0];
     expect(table.table_name).to.be('metrics');
-    expect(table.put_rows.length).to.be.above(0);
-    var row = table.put_rows[0];
+    expect(table.rows.length).to.be.above(0);
+    var row = table.rows[0];
     expect(row.is_ok).to.be(true);
     expect(row.consumed.capacity_unit.read).to.be(0);
     expect(row.consumed.capacity_unit.write).to.be(1);
   });
 
-  it('batchWriteRow delete_rows should ok', function* () {
+  it('batchWriteRow delete_rows should ok', async function () {
     var tables = [
       {
         table_name: 'metrics',
-        delete_rows: [
+        rows: [
           {
+            type: OTS.OperationType.DELETE,
+            row_change: serialize({
+              uid: 'test-uid'
+            }, null, true),
             condition: {
               row_existence: OTS.RowExistenceExpectation.IGNORE
-            },
-            primary_key: {
-              uid: 'test-uid'
             }
           }
         ]
       }
     ];
-    var response = yield client.batchWriteRow(tables);
+    var response = await client.batchWriteRow(tables);
     expect(response).to.be.ok();
     expect(response.tables.length).to.be.above(0);
     var table = response.tables[0];
     expect(table.table_name).to.be('metrics');
-    expect(table.delete_rows.length).to.be.above(0);
-    var row = table.delete_rows[0];
+    expect(table.rows.length).to.be.above(0);
+    var row = table.rows[0];
     expect(row.is_ok).to.be(true);
     expect(row.consumed.capacity_unit.read).to.be(0);
     expect(row.consumed.capacity_unit.write).to.be(1);
   });
 
-  it('batchGetRow should ok', function* () {
+  it('batchGetRow should ok', async function () {
     var tables = [
       {
         table_name: 'metrics',
-        rows: [
-          {
-            primary_key: {uid: 'test_uid'}
-          }
+        primary_key: [
+          serialize({uid: 'test_uid'})
         ],
-        columns_to_get: ['test']
+        columns_to_get: ['test'],
+        max_versions: 1
       }
     ];
-    var response = yield client.batchGetRow(tables);
+    var response = await client.batchGetRow(tables);
     expect(response).to.be.ok();
     expect(response.tables.length).to.be.above(0);
     var table = response.tables[0];
@@ -101,27 +109,29 @@ describe('batch', function () {
     expect(table.rows.length).to.be.above(0);
     var row = table.rows[0];
     expect(row.is_ok).to.be(true);
-    expect(row.parsedRow).to.eql({ test: 'test_value' });
+    expect(row.row).to.eql({
+      uid: 'test_uid',
+      test: 'test_value'
+    });
     expect(row.consumed.capacity_unit.read).to.be(1);
     expect(row.consumed.capacity_unit.write).to.be(0);
   });
 
-  it('batchGetRow with filter should ok', function* () {
+  it('batchGetRow with filter should ok', async function () {
     var tables = [
       {
         table_name: 'metrics',
-        rows: [
-          {
-            primary_key: {uid: 'test_uid'}
-          }
+        primary_key: [
+          serialize({uid: 'test_uid'})
         ],
         columns_to_get: ['test'],
-        filter: OTS.makeFilter('test != @test false', {
-          test: OTS.createValue('test_value')
+        max_versions: 1,
+        filter: OTS.makeFilter('test != @test false true', {
+          test: 'test_value'
         })
       }
     ];
-    var response = yield client.batchGetRow(tables);
+    var response = await client.batchGetRow(tables);
     expect(response).to.be.ok();
     expect(response.tables.length).to.be.above(0);
     var table = response.tables[0];
@@ -129,12 +139,12 @@ describe('batch', function () {
     expect(table.rows.length).to.be.above(0);
     var row = table.rows[0];
     expect(row.is_ok).to.be(true);
-    expect(row.parsedRow).to.eql(null);
+    expect(row.row).to.eql(null);
     expect(row.consumed.capacity_unit.read).to.be(1);
     expect(row.consumed.capacity_unit.write).to.be(0);
   });
 
-  it('getRange should ok', function* () {
+  it('getRange should ok', async function () {
     var start = {
       uid: OTS.InfMin
     };
@@ -146,20 +156,21 @@ describe('batch', function () {
       table_name: 'metrics',
       direction: OTS.Direction.FORWARD,
       columns_to_get: ['test'],
+      max_versions: 1,
       limit: 4,
       inclusive_start_primary_key: start,
       exclusive_end_primary_key: end
     };
-    var response = yield client.getRange(request);
+    var response = await client.getRange(request);
     expect(response).to.be.ok();
     expect(response.consumed.capacity_unit.read).to.be(1);
     expect(response.consumed.capacity_unit.write).to.be(0);
     expect(response.rows.length).to.be.above(0);
     var row = response.rows[0];
-    expect(row.parsedRow).to.eql({ test: 'test_value' });
+    expect(row).to.eql({ uid: 'test_uid', test: 'test_value' });
   });
 
-  it('getRange with filter should ok', function* () {
+  it('getRange with filter should ok', async function () {
     var start = {
       uid: OTS.InfMin
     };
@@ -172,13 +183,14 @@ describe('batch', function () {
       direction: OTS.Direction.FORWARD,
       columns_to_get: ['test'],
       limit: 4,
+      max_versions: 1,
       inclusive_start_primary_key: start,
       exclusive_end_primary_key: end,
-      filter: OTS.makeFilter('test != @test false', {
+      filter: OTS.makeFilter('test != @test false true', {
         test: 'test_value'
       })
     };
-    var response = yield client.getRange(request);
+    var response = await client.getRange(request);
     expect(response).to.be.ok();
     expect(response.consumed.capacity_unit.read).to.be(1);
     expect(response.consumed.capacity_unit.write).to.be(0);

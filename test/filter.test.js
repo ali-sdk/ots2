@@ -9,7 +9,7 @@ const OTS = require('../');
 describe('row', function () {
 
   it('makeFilter should ok', function* () {
-    var filter = OTS.makeFilter('type == @type1 false OR type == @type2 false', {
+    var filter = OTS.makeFilter('type == @type1 false true OR type == @type2 false true', {
       type1: 1,
       type2: 2
     });

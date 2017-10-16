@@ -41,7 +41,15 @@
     "describe": true,
     "it": true,
     "before": true,
-    "after": true
+    "after": true,
+    "xit": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "script",
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "extends": "eslint:recommended"
 }

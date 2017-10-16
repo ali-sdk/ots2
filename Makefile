@@ -13,22 +13,10 @@ install:
 	@npm install --production
 
 test:
-	@NODE_ENV=test ./node_modules/.bin/mocha \
-		--reporter $(REPORTER) \
-		--require co-mocha \
-		--timeout $(TIMEOUT) \
-		$(MOCHA_OPTS) \
-		$(TESTS)
+	@npm run test
 
 test-cov:
-	@NODE_ENV=test node \
-		node_modules/.bin/istanbul cover --report html \
-		./node_modules/.bin/_mocha -- \
-		--reporter $(REPORTER) \
-		--require co-mocha \
-		--timeout $(TIMEOUT) \
-		$(MOCHA_OPTS) \
-		$(TESTS)
+	@npm run test-cov
 
 debug:
 	@NODE_ENV=test \
