@@ -1,9 +1,14 @@
 'use strict';
 
+const ots2 = require('./lib/ots2');
 const parser = require('./lib/filter_parser');
 const runner = require('./lib/filter_runner');
 const Client = require('./lib/client');
-const helper = require('./lib/helper');
+const {
+  serialize,
+  PUT, DELETE, DELETE_ALL,
+  InfMin, InfMax
+} = require('./lib/plainbuffer');
 
 /**
  * 根据选项创建实例的客户端
@@ -30,18 +35,65 @@ exports.createClient = function (opts) {
   return new Client(opts);
 };
 
-// copy helper
-Object.assign(exports, helper);
-
-var $$ = function (input) {
-  if (typeof input === 'object' && input.type) {
-    return input;
+/**
+ * 相关Enum类型
+ *
+ * Example:
+ * ```
+ * enum PrimaryKeyType {
+ *     INTEGER = 1;
+ *     STRING = 2;
+ *     BINARY = 3;
+ * }
+ *
+ * enum PrimaryKeyOption {
+ *     AUTO_INCREMENT = 1;
+ * }
+ *
+ * enum RowExistenceExpectation {
+ *     IGNORE = 0;
+ *     EXPECT_EXIST = 1;
+ *     EXPECT_NOT_EXIST = 2;
+ * }
+ *
+ * enum ReturnType {
+ *     RT_NONE = 0;
+ *     RT_PK = 1;
+ * }
+ *
+ * enum OperationType {
+ *     PUT = 1;
+ *     UPDATE = 2;
+ *     DELETE = 3;
+ * }
+ * ```
+ */
+// 拷贝所有的Enum
+for (var key in ots2) {
+  if (typeof ots2[key] !== 'function') {
+    exports[key] = ots2[key];
   }
+}
 
-  return helper.createValue(input);
+exports.InfMin = InfMin;
+exports.InfMax = InfMax;
+
+exports.$put = function (value) {
+  return {
+    type: PUT,
+    value: value
+  };
+};
+
+exports.$delete = function (timestamp) {
+  return {type: DELETE, timestamp: timestamp};
+};
+
+exports.$deleteAll = function () {
+  return {type: DELETE_ALL};
 };
 
 exports.makeFilter = function (input, locals) {
   var ast = parser.parse(input);
-  return runner.parseCondition(ast, locals, $$);
+  return runner.parseFilter(ast, locals);
 };

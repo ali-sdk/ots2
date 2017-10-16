@@ -1,5 +1,6 @@
 'use strict';
 
+var ots2 = require('../lib/ots2');
 var expect = require('expect.js');
 var client = require('./common');
 
@@ -7,7 +8,13 @@ describe('table', function () {
   it('createTable should ok', function* () {
     var keys = [{ 'name': 'uid', 'type': 'STRING' }];
     var capacityUnit = {read: 1, write: 1};
-    var response = yield* client.createTable('metrics', keys, capacityUnit);
+    var options = {
+      table_options: {
+        time_to_live: -1,// 数据的过期时间, 单位秒, -1代表永不过期. 假如设置过期时间为一年, 即为 365 * 24 * 3600.
+        max_versions: 1
+      }
+    };
+    var response = yield* client.createTable('metrics', keys, capacityUnit, options);
     expect(response).to.be.ok();
   });
 

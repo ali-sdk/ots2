@@ -6,22 +6,30 @@ const kitx = require('kitx');
 const client = require('./common');
 const OTS = require('../');
 
+const { serialize } = require('../lib/plainbuffer');
+
 describe('row', function () {
-  before(function* () {
+  before(async function () {
     this.timeout(12000);
     var keys = [{ 'name': 'uid', 'type': 'STRING' }];
-    var capacityUnit = {read: 5, write: 5};
-    var response = yield client.createTable('metrics', keys, capacityUnit);
+    var capacityUnit = {read: 1, write: 1};
+    var options = {
+      table_options: {
+        time_to_live: -1,// 数据的过期时间, 单位秒, -1代表永不过期. 假如设置过期时间为一年, 即为 365 * 24 * 3600.
+        max_versions: 1
+      }
+    };
+    var response = await client.createTable('metrics', keys, capacityUnit, options);
     expect(response).to.be.ok();
-    yield kitx.sleep(5000);
+    await kitx.sleep(5000);
   });
 
-  after(function* () {
-    var response = yield client.deleteTable('metrics');
+  after(async function () {
+    var response = await client.deleteTable('metrics');
     expect(response).to.be.ok();
   });
 
-  it('putRow should ok', function* () {
+  it('putRow should ok', async function () {
     var name = 'metrics';
     var condition = {
       row_existence: OTS.RowExistenceExpectation.IGNORE
@@ -34,22 +42,26 @@ describe('row', function () {
       boolean: true,
       binary: new Buffer([0x01])
     };
-    var response = yield client.putRow(name, condition, primaryKeys, columns);
+    var row = serialize(primaryKeys, columns);
+
+    var response = await client.putRow(name, condition, row);
     expect(response).to.be.ok();
     expect(response.consumed.capacity_unit.read).to.be(0);
     expect(response.consumed.capacity_unit.write).to.be(1);
   });
 
-  it('getRow should ok', function* () {
+  it('getRow should ok', async function () {
     var name = 'metrics';
     var primaryKeys = {uid: 'test_uid'};
     var columns = ['test', 'integer', 'double', 'boolean', 'binary'];
-    var response = yield client.getRow(name, primaryKeys, columns);
+    var row = serialize(primaryKeys);
+    var response = await client.getRow(name, row, columns);
     expect(response).to.be.ok();
-    expect(response.parsedRow).to.be.eql({
-      'test': 'test_value',
+    expect(response.row).to.be.eql({
+      uid: 'test_uid',
+      test: 'test_value',
       boolean: true,
-      integer: {low: 1, high: 0, unsigned: false},
+      integer: 1,
       double: 1.1,
       binary: new Buffer([0x01])
     });
@@ -57,77 +69,141 @@ describe('row', function () {
     expect(response.consumed.capacity_unit.write).to.be(0);
   });
 
-  it('getRow with filter should ok', function* () {
+  it('getRow with filter should ok', async function () {
     var name = 'metrics';
     var primaryKeys = {uid: 'test_uid'};
+    var row = serialize(primaryKeys);
     var columns = ['test', 'integer', 'double', 'boolean', 'binary'];
-    var filter = OTS.makeFilter('uid == @uid false', {uid: 'test_uid'});
-    var response = yield client.getRow(name, primaryKeys, columns, filter);
+    var filter = OTS.makeFilter('test == @test false true', {
+      test: '!testvalue'
+    });
+    var response = await client.getRow(name, row, columns, {
+      filter
+    });
     expect(response).to.be.ok();
-    expect(response.parsedRow).to.be.eql(null);
+    expect(response.row).to.be.eql(null);
     expect(response.consumed.capacity_unit.read).to.be(1);
     expect(response.consumed.capacity_unit.write).to.be(0);
   });
 
-  it('updateRow with put should ok', function* () {
+  it('updateRow should ok', async function () {
     const name = 'metrics';
     var condition = {
       row_existence: OTS.RowExistenceExpectation.IGNORE
     };
-    var primaryKeys = {uid: 'test_uid'};
+    var primaryKeys = {
+      uid: 'test_uid'
+    };
     var columns = {
-      test: OTS.$put('test_value_replaced')
+      test: 'test_value_replaced_origin'
     };
 
-    var response = yield client.updateRow(name, condition, primaryKeys, columns);
+    var row = serialize(primaryKeys, columns);
+    var response = await client.updateRow(name, row, condition);
     expect(response).to.be.ok();
     expect(response.consumed.capacity_unit.read).to.be(0);
     expect(response.consumed.capacity_unit.write).to.be(1);
 
-    response = yield client.getRow(name, primaryKeys, ['test']);
+    response = await client.getRow(name, serialize(primaryKeys), ['test']);
     expect(response).to.be.ok();
-    expect(response.parsedRow).to.be.eql({'test': 'test_value_replaced'});
+    expect(response.row).to.be.eql({
+      'test': 'test_value_replaced_origin',
+      'uid': 'test_uid'
+    });
     expect(response.consumed.capacity_unit.read).to.be(1);
     expect(response.consumed.capacity_unit.write).to.be(0);
   });
 
-  it('updateRow with delete should ok', function* () {
+  it('updateRow with $put should ok', async function () {
     const name = 'metrics';
     var condition = {
       row_existence: OTS.RowExistenceExpectation.IGNORE
     };
-    var primaryKeys = {uid: 'test_uid'};
+    var primaryKeys = {
+      uid: 'test_uid'
+    };
     var columns = {
-      test: OTS.$delete()
+      test: OTS.$put('test_value_replaced_put')
     };
 
-    var response = yield client.updateRow(name, condition, primaryKeys, columns);
+    var row = serialize(primaryKeys, columns);
+    var response = await client.updateRow(name, row, condition);
     expect(response).to.be.ok();
     expect(response.consumed.capacity_unit.read).to.be(0);
     expect(response.consumed.capacity_unit.write).to.be(1);
 
-    response = yield client.getRow(name, primaryKeys, ['uid', 'test']);
+    response = await client.getRow(name, serialize(primaryKeys), ['test']);
     expect(response).to.be.ok();
-    expect(response.parsedRow).to.not.have.property('test');
+    expect(response.row).to.be.eql({
+      'test': 'test_value_replaced_put',
+      'uid': 'test_uid'
+    });
     expect(response.consumed.capacity_unit.read).to.be(1);
     expect(response.consumed.capacity_unit.write).to.be(0);
   });
 
-  it('deleteRow should ok', function* () {
+  xit('updateRow with delete should ok', async function () {
+    const name = 'metrics';
+    var condition = {
+      row_existence: OTS.RowExistenceExpectation.IGNORE
+    };
+    var primaryKeys = {
+      uid: 'test_uid'
+    };
+    var columns = {
+      test: OTS.$delete(Date.now())
+    };
+    var row = serialize(primaryKeys, columns);
+    var response = await client.updateRow(name, row, condition, columns);
+    expect(response).to.be.ok();
+    expect(response.consumed.capacity_unit.read).to.be(0);
+    expect(response.consumed.capacity_unit.write).to.be(1);
+    response = await client.getRow(name, serialize(primaryKeys), ['uid', 'test']);
+    expect(response).to.be.ok();
+    expect(response.row).to.not.have.property('test');
+    expect(response.consumed.capacity_unit.read).to.be(1);
+    expect(response.consumed.capacity_unit.write).to.be(0);
+  });
+
+  it('updateRow with deleteAll should ok', async function () {
+    const name = 'metrics';
+    var condition = {
+      row_existence: OTS.RowExistenceExpectation.IGNORE
+    };
+    var primaryKeys = {
+      uid: 'test_uid'
+    };
+    var columns = {
+      test: OTS.$deleteAll()
+    };
+    var row = serialize(primaryKeys, columns);
+    var response = await client.updateRow(name, row, condition, columns);
+    expect(response).to.be.ok();
+    expect(response.consumed.capacity_unit.read).to.be(0);
+    expect(response.consumed.capacity_unit.write).to.be(1);
+    response = await client.getRow(name, serialize(primaryKeys), ['uid', 'test']);
+    expect(response).to.be.ok();
+    expect(response.row).to.not.have.property('test');
+    expect(response.consumed.capacity_unit.read).to.be(1);
+    expect(response.consumed.capacity_unit.write).to.be(0);
+  });
+
+  it('deleteRow should ok', async function () {
     const name = 'metrics';
     var condition = {
       row_existence: OTS.RowExistenceExpectation.IGNORE
     };
     var primaryKeys = {uid: 'test_uid'};
-    var response = yield client.deleteRow(name, condition, primaryKeys);
+    var row = serialize(primaryKeys, null, true);
+    var response = await client.deleteRow(name, row, condition);
     expect(response).to.be.ok();
     expect(response.consumed.capacity_unit.read).to.be(0);
     expect(response.consumed.capacity_unit.write).to.be(1);
 
     var columns = ['test'];
-    response = yield client.getRow(name, primaryKeys, columns);
+    response = await client.getRow(name, serialize(primaryKeys), columns);
     expect(response).to.be.ok();
-    expect(response.parsedRow).to.be.eql(null);
+    expect(response.row).to.be.eql(null);
     expect(response.consumed.capacity_unit.read).to.be(1);
     expect(response.consumed.capacity_unit.write).to.be(0);
   });
