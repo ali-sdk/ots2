@@ -38,8 +38,15 @@ var client = ots.createClient({
 yield client.listTable();
 // 创建表
 var keys = [{ 'name': 'uid', 'type': 'STRING' }];
-var capacityUnit = {read: 1, write: 1};
-var response = yield client.createTable('metrics', keys, capacityUnit);
+// 若实例为‘容量型’，read 和 write 值必须为0，否则会报错 OTSParameterInvalidError: Can not reserve read capacity unit on capacity cluster
+var capacityUnit = {read: 0, write: 0};
+var options = {
+  table_options: {
+    time_to_live: -1,// 数据的过期时间, 单位秒, -1代表永不过期. 假如设置过期时间为一年, 即为 365 * 24 * 3600.
+    max_versions: 1
+  }
+};
+var response = yield client.createTable('metrics', keys, capacityUnit, options);
 // 更新表
 var capacityUnit = {read: 2, write: 1};
 var response = yield client.updateTable('metrics', capacityUnit);
