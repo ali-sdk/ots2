@@ -5,7 +5,6 @@ const parser = require('./lib/filter_parser');
 const runner = require('./lib/filter_runner');
 const Client = require('./lib/client');
 const {
-  serialize,
   PUT, DELETE, DELETE_ALL,
   InfMin, InfMax
 } = require('./lib/plainbuffer');

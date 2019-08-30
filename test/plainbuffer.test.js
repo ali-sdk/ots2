@@ -1,8 +1,8 @@
 'use strict';
 
-var expect = require('expect.js');
-var ots = require('../lib/client');
-var plainbuffer = require('../lib/plainbuffer');
+const expect = require('expect.js');
+const ots = require('../lib/client');
+const plainbuffer = require('../lib/plainbuffer');
 
 describe('plainbuffer', function() {
   it('serialize(primaryKeys) should ok', function() {

@@ -25,8 +25,8 @@ var tree = parse('NOT NOT name == @name true true');
 console.log(JSON.stringify(tree, null, 2));
 
 try {
-var tree = parse('name > @name true true AND age <= @age false true');
-console.log(JSON.stringify(tree, null, 2));
+  var tree = parse('name > @name true true AND age <= @age false true');
+  console.log(JSON.stringify(tree, null, 2));
 } catch (ex) {
   console.log(ex);
 }

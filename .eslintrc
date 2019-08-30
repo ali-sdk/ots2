@@ -1,8 +1,14 @@
 {
   "rules": {
-    "indent": [2, 2],
-    "quotes": [2, "single"],
-    "linebreak-style": [2, "unix"],
+    "indent": [
+      2,
+      2
+    ],
+    "quotes": [2, "single", {"avoidEscape": true, "allowTemplateLiterals": true}],
+    "linebreak-style": [
+      2,
+      "unix"
+    ],
     "semi": [2, "always"],
     "strict": [2, "global"],
     "curly": 2,
@@ -30,7 +36,11 @@
     "callback-return": [2, ["callback", "cb", "next"]],
     "global-require": 0,
     "no-console": 0,
-    "generator-star-spacing": ["error", "after"]
+    "require-yield": 0,
+    "space-infix-ops": ["error", {"int32Hint": false}],
+    "arrow-spacing": "error",
+    "block-spacing": "error",
+    "space-before-blocks": "error"
   },
   "env": {
     "es6": true,
@@ -40,12 +50,12 @@
   "globals": {
     "describe": true,
     "it": true,
+    "xit": true,
     "before": true,
-    "after": true,
-    "xit": true
+    "after": true
   },
   "parserOptions": {
-    "ecmaVersion": 8,
+    "ecmaVersion": "2018",
     "sourceType": "script",
     "ecmaFeatures": {
       "jsx": true

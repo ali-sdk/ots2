@@ -1,11 +1,10 @@
 'use strict';
 
-var ots2 = require('../lib/ots2');
 var expect = require('expect.js');
 var client = require('./common');
 
 describe('table', function () {
-  it('createTable should ok', function* () {
+  it('createTable should ok', async function () {
     var keys = [{ 'name': 'uid', 'type': 'STRING' }];
     var capacityUnit = {read: 1, write: 1};
     var options = {
@@ -14,14 +13,14 @@ describe('table', function () {
         max_versions: 1
       }
     };
-    var response = yield* client.createTable('metrics', keys, capacityUnit, options);
+    var response = await client.createTable('metrics', keys, capacityUnit, options);
     expect(response).to.be.ok();
   });
 
-  it('updateTable should ok', function* () {
+  it('updateTable should ok', async function () {
     try {
       var capacityUnit = {read: 2, write: 1};
-      var response = yield* client.updateTable('metrics', capacityUnit);
+      var response = await client.updateTable('metrics', capacityUnit);
       expect(response).to.be.ok();
       expect(response.capacity_unit_details.capacity_unit.read).to.be(2);
       expect(response.capacity_unit_details.capacity_unit.write).to.be(1);
@@ -32,21 +31,21 @@ describe('table', function () {
     }
   });
 
-  it('listTable should ok', function* () {
-    var response = yield* client.listTable();
+  it('listTable should ok', async function () {
+    var response = await client.listTable();
     expect(response.table_names).to.be.ok();
     expect(response.table_names.length).to.be.above(0);
   });
 
-  it('describeTable should ok', function* () {
-    var response = yield* client.describeTable('metrics');
+  it('describeTable should ok', async function () {
+    var response = await client.describeTable('metrics');
     expect(response).to.be.ok();
     expect(response.table_meta.table_name).to.be('metrics');
     expect(response.reserved_throughput_details).to.be.ok();
   });
 
-  it('deleteTable should ok', function* () {
-    var response = yield* client.deleteTable('metrics');
+  it('deleteTable should ok', async function () {
+    var response = await client.deleteTable('metrics');
     expect(response).to.be.ok();
   });
 });

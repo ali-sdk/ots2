@@ -35,7 +35,7 @@ var client = ots.createClient({
 所有表的操作
 ```js
 // 列出所有表名
-yield client.listTable();
+await client.listTable();
 // 创建表
 var keys = [{ 'name': 'uid', 'type': 'STRING' }];
 // 若实例为‘容量型’，read 和 write 值必须为0，否则会报错 OTSParameterInvalidError: Can not reserve read capacity unit on capacity cluster
@@ -46,14 +46,14 @@ var options = {
     max_versions: 1
   }
 };
-var response = yield client.createTable('metrics', keys, capacityUnit, options);
+var response = await client.createTable('metrics', keys, capacityUnit, options);
 // 更新表
 var capacityUnit = {read: 2, write: 1};
-var response = yield client.updateTable('metrics', capacityUnit);
+var response = await client.updateTable('metrics', capacityUnit);
 // 查看表信息
-var response = yield client.describeTable('metrics');
+var response = await client.describeTable('metrics');
 // 删除表
-var response = yield client.deleteTable('metrics');
+var response = await client.deleteTable('metrics');
 ```
 
 所有行的操作
@@ -68,14 +68,14 @@ var primaryKeys = {uid: 'test_uid'};
 
 var columns = {test: 'test_value'};
 
-var response = yield client.putRow(name, condition, primaryKeys, columns);
+var response = await client.putRow(name, condition, primaryKeys, columns);
 
 // 读取行
 var name = 'metrics';
 var primaryKeys = {uid: 'test_uid'};
 
 var columns = ['test'];
-var response = yield client.getRow(name, primaryKeys, columns);
+var response = await client.getRow(name, primaryKeys, columns);
 
 // 更新行
 var name = 'metrics';
@@ -88,7 +88,7 @@ var columns = {
   test: ots.$put('test_value_replaced')
 };
 
-var response = yield client.updateRow(name, condition, primaryKeys, columns);
+var response = await client.updateRow(name, condition, primaryKeys, columns);
 
 // 删除行
 var name = 'metrics';
@@ -99,7 +99,7 @@ var primaryKeys = {
   uid: 'test_uid'
 };
 
-var response = yield client.deleteRow(name, condition, primaryKeys);
+var response = await client.deleteRow(name, condition, primaryKeys);
 ```
 
 批量操作
@@ -126,7 +126,7 @@ var tables = [
     delete_rows: {}
   }
 ];
-var response = yield client.batchWriteRow(tables);
+var response = await client.batchWriteRow(tables);
 
 // 批量读
 var tables = [
@@ -142,7 +142,7 @@ var tables = [
     columns_to_get: ['test']
   }
 ];
-var response = yield client.batchGetRow(tables);
+var response = await client.batchGetRow(tables);
 
 // 范围读
 var start = {
@@ -161,7 +161,7 @@ var request = {
   inclusive_start_primary_key: start,
   exclusive_end_primary_key: end
 };
-var response = yield client.getRange(request);
+var response = await client.getRange(request);
 ```
 
 ### 条件更新（Conditional Update）和过滤器（Filter）支持

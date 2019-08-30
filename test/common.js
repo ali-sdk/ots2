@@ -12,7 +12,7 @@ var options = {
 try { // 覆盖
   options = require('./config');
 } catch (ex) {
-
+  // ignore
 }
 
 module.exports = ots.createClient(options);
