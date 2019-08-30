@@ -6,7 +6,8 @@ const runner = require('./lib/filter_runner');
 const Client = require('./lib/client');
 const {
   PUT, DELETE, DELETE_ALL,
-  InfMin, InfMax
+  InfMin, InfMax,
+  serialize
 } = require('./lib/plainbuffer');
 
 /**
@@ -96,3 +97,5 @@ exports.makeFilter = function (input, locals) {
   var ast = parser.parse(input);
   return runner.parseFilter(ast, locals);
 };
+
+exports.serialize = serialize;
