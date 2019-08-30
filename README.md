@@ -1,5 +1,17 @@
 Aliyun OTS client for Node.js(ES6)
 ==================================
+
+[![NPM version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+[![codecov][cov-image]][cov-url]
+
+[npm-image]: https://img.shields.io/npm/v/@alicloud/ots2.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@alicloud/ots2
+[travis-image]: https://img.shields.io/travis/ali-sdk/ots2/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/ali-sdk/ots2
+[cov-image]: https://codecov.io/gh/ali-sdk/ots2/branch/master/graph/badge.svg
+[cov-url]: https://codecov.io/gh/ali-sdk/ots2
+
 Aliyun OTS数据库服务Node.js客户端。
 
 ## OTS介绍
