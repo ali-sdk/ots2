@@ -12,7 +12,7 @@ describe('plainbuffer', function() {
     };
 
     var bytes = plainbuffer.serialize(primaryKeys);
-    expect(bytes).to.eql(new Buffer([
+    expect(bytes).to.eql(Buffer.from([
       0x75, 0x00, 0x00, 0x00, // tag_header
       // row
       0x01, // tag_pk
@@ -61,7 +61,7 @@ describe('plainbuffer', function() {
     };
 
     var bytes = plainbuffer.serialize(primaryKeys, columns);
-    expect(bytes).to.eql(new Buffer([
+    expect(bytes).to.eql(Buffer.from([
       0x75, 0x00, 0x00, 0x00, // tag_header
       // row
       0x01, // tag_pk
@@ -122,7 +122,7 @@ describe('plainbuffer', function() {
     };
 
     var bytes = plainbuffer.serialize(primaryKeys, {});
-    expect(bytes).to.eql(new Buffer([
+    expect(bytes).to.eql(Buffer.from([
       0x75, 0x00, 0x00, 0x00, // tag_header
       // row
       0x01, // tag_pk
@@ -184,7 +184,7 @@ describe('plainbuffer', function() {
     var Value = plainbuffer.Value;
     var data = plainbuffer.DoubleColumn('name', 1.1);
     var value = new Value(data.type, data.value);
-    expect(value.toBytes()).to.eql(new Buffer([
+    expect(value.toBytes()).to.eql(Buffer.from([
       0x01, // DOUBLE
       0x9a, 0x99, 0x99, 0x99, 0x99, 0x99, 0xf1, 0x3f
     ]));
@@ -194,7 +194,7 @@ describe('plainbuffer', function() {
     var Value = plainbuffer.Value;
     var data = plainbuffer.BooleanColumn('name', true);
     var value = new Value(data.type, data.value);
-    expect(value.toBytes()).to.eql(new Buffer([
+    expect(value.toBytes()).to.eql(Buffer.from([
       0x02, // BOOLEAN
       0x01
     ]));
@@ -204,7 +204,7 @@ describe('plainbuffer', function() {
     var Value = plainbuffer.Value;
     var data = plainbuffer.BooleanColumn('name', false);
     var value = new Value(data.type, data.value);
-    expect(value.toBytes()).to.eql(new Buffer([
+    expect(value.toBytes()).to.eql(Buffer.from([
       0x02, // BOOLEAN
       0x00
     ]));
@@ -214,7 +214,7 @@ describe('plainbuffer', function() {
     var Value = plainbuffer.Value;
     var data = ots.NullColumn('name');
     var value = new Value(data.type, data.value);
-    expect(value.toBytes()).to.eql(new Buffer([
+    expect(value.toBytes()).to.eql(Buffer.from([
       0x06,
       0x01
     ]));
@@ -222,9 +222,9 @@ describe('plainbuffer', function() {
 
   it('Value(blob) should ok', function() {
     var Value = plainbuffer.Value;
-    var data = plainbuffer.BlobColumn('name', new Buffer([0x01, 0x02]));
+    var data = plainbuffer.BlobColumn('name', Buffer.from([0x01, 0x02]));
     var value = new Value(data.type, data.value);
-    expect(value.toBytes()).to.eql(new Buffer([
+    expect(value.toBytes()).to.eql(Buffer.from([
       0x07,
       0x02, 0x00, 0x00, 0x00,
       0x01, 0x02
@@ -232,7 +232,7 @@ describe('plainbuffer', function() {
   });
 
   it('deserialize should ok', function() {
-    var buff = new Buffer([
+    var buff = Buffer.from([
       // tag header
       0x75, 0x0, 0x0, 0x0,
       0x1, // tag_pk
@@ -286,7 +286,7 @@ describe('plainbuffer', function() {
   });
 
   it('deserialize(range) should ok', function() {
-    var buff = new Buffer([
+    var buff = Buffer.from([
       0x75, 0x0, 0x0, 0x0, // tag header
       0x1, // tag_pk
       0x3, // tag_cell

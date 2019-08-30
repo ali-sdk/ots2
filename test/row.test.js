@@ -40,7 +40,7 @@ describe('row', function () {
       integer: 1,
       double: 1.1,
       boolean: true,
-      binary: new Buffer([0x01])
+      binary: Buffer.from([0x01])
     };
     var row = serialize(primaryKeys, columns);
 
@@ -63,7 +63,7 @@ describe('row', function () {
       boolean: true,
       integer: 1,
       double: 1.1,
-      binary: new Buffer([0x01])
+      binary: Buffer.from([0x01])
     });
     expect(response.consumed.capacity_unit.read).to.be(1);
     expect(response.consumed.capacity_unit.write).to.be(0);
