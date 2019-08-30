@@ -1,6 +1,6 @@
 {
   "name": "@alicloud/ots2",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "OTS(2014-08-08) client for Node.js(ES6)",
   "main": "./index",
   "directories": {
@@ -9,8 +9,9 @@
   "scripts": {
     "lint": "eslint --fix lib/ test/",
     "test": "mocha -R spec test/*.test.js",
-    "test-file": "mocha -R spec",
-    "test-cov": "nyc --reporter=html --reporter=text mocha -R spec test/*.test.js"
+    "test-cov": "nyc -r=html -r=text -r=lcov mocha -t 3000 -R spec test/*.test.js",
+    "test-integration": "mocha -R spec test/*.integration.js",
+    "ci": "npm run lint && npm run test-cov && codecov"
   },
   "author": "Jackson Tian",
   "license": "MIT",
@@ -22,6 +23,7 @@
     "pegjs": "^0.10.0"
   },
   "devDependencies": {
+    "codecov": "^3.5.0",
     "expect.js": "^0.3.1",
     "mocha": "^4.0.1",
     "nyc": "^11.2.1"

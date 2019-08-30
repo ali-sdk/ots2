@@ -1,0 +1,14 @@
+language: node_js
+
+node_js:
+  - "12"
+  - "10"
+  - "8"
+
+branches:
+  only:
+    - master
+
+script:
+  - npm run ci
+  - test -z $ACCESS_KEY_ID -a -z $ACCESS_KEY_SECRET || npm run test-integration

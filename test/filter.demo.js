@@ -18,24 +18,24 @@ var parse = require('../lib/filter_parser').parse;
 var tree = parse('name == @name true true');
 console.log(JSON.stringify(tree, null, 2));
 
-var tree = parse('NOT name == @name true true');
+tree = parse('NOT name == @name true true');
 console.log(JSON.stringify(tree, null, 2));
 
-var tree = parse('NOT NOT name == @name true true');
+tree = parse('NOT NOT name == @name true true');
 console.log(JSON.stringify(tree, null, 2));
 
 try {
-  var tree = parse('name > @name true true AND age <= @age false true');
+  tree = parse('name > @name true true AND age <= @age false true');
   console.log(JSON.stringify(tree, null, 2));
 } catch (ex) {
   console.log(ex);
 }
 
-var tree = parse('NOT name > @name true true AND age <= @age false true');
+tree = parse('NOT name > @name true true AND age <= @age false true');
 console.log(JSON.stringify(tree, null, 2));
 
-var tree = parse('name > @name true true AND age <= @age false true AND gender == @gender true true');
+tree = parse('name > @name true true AND age <= @age false true AND gender == @gender true true');
 console.log(JSON.stringify(tree, null, 2));
 
-var tree = parse('name > @name true true OR age <= @age false true AND gender == @gender true true');
+tree = parse('name > @name true true OR age <= @age false true AND gender == @gender true true');
 console.log(JSON.stringify(tree, null, 2));
